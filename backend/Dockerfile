@@ -11,5 +11,7 @@ RUN chmod +x /wait-for-it.sh
 
 COPY . .
 
+RUN mkdir -p /app/logs
+
 # Remplace la commande de démarrage par défaut par :
-CMD ["/wait-for-it.sh", "db:5432", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"] 
+CMD ["/bin/sh", "-c", "mkdir -p /app/logs && /wait-for-it.sh db:5432 -- python manage.py runserver 0.0.0.0:8000"] 
