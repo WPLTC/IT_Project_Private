@@ -1,93 +1,78 @@
-# 🐳 Guide Docker – IT-PROJECT-PRIVATE
+# 🐳 Guide Docker – Démarrage Rapide
 
-Ce document explique uniquement la partie Docker du projet (architecture, services, commandes utiles, bonnes pratiques).
-
----
-
-## 1. Architecture Docker
-
-Le projet utilise **Docker Compose** pour orchestrer plusieurs services :
-
-- **backend** : Application Django (API REST)
-- **frontend** : Application React (Vite)
-- **db** : Base de données PostgreSQL
-- **redis** : Service Redis (cache, ratelimit, etc.)
-
-Chaque service a son propre Dockerfile (backend, frontend) ou utilise une image officielle (db, redis).
+Ce guide explique comment démarrer le projet à partir du dépôt GitHub, configurer l'environnement, et lancer toute l'application avec Docker.
 
 ---
 
-## 2. Rôle de chaque service
+## 1. Cloner le projet
 
-| Service   | Rôle principal                                 | Port local |
-|-----------|------------------------------------------------|------------|
-| backend   | API Django (Python)                            | 8000       |
-| frontend  | Application React (Vite)                       | 5173       |
-| db        | Base de données PostgreSQL                     | 5432       |
-| redis     | Cache/ratelimit pour Django                    | 6379       |
+Commencez par cloner le dépôt sur votre PC :
+
+```bash
+git clone https://github.com/WPLTC/IT_Project_Private.git
+cd IT_Project_Private
+```
 
 ---
 
-## 3. Commandes Docker Compose utiles
+## 2. Créer le fichier `.env` pour le backend
 
-### Lancer toute la stack (build + run)
+Dans le dossier `backend/`, créez un fichier nommé `.env` et remplissez-le avec les variables d'environnement que je vous ai envoyées en privé (exemple : clés secrètes, paramètres de base de données, email, etc.).
+
+Exemple de commande pour créer le fichier (sous Windows) :
+```powershell
+cd backend
+.env
+```
+Collez-y les variables fournies, puis enregistrez.
+
+---
+
+## 3. Lancer Docker Desktop
+
+Assurez-vous que Docker Desktop est bien lancé et en fonctionnement sur votre machine.
+
+---
+
+## 4. Construire et lancer les conteneurs
+
+Revenez à la racine du projet (`IT_PROJECT_PRIVATE`) et exécutez :
+pour démarrer toute l'application :
+
 ```bash
 docker-compose up --build
 ```
 
-### Arrêter tous les services
-```bash
-docker-compose down
-```
-
-### Réinitialiser la base de données (supprimer les données)
-```bash
-docker-compose down -v
-# puis
-# docker-compose up --build
-```
-
-### Voir les logs d’un service
-```bash
-docker-compose logs backend
-# ou
-# docker-compose logs db
-```
-
-### Redémarrer un service
-```bash
-docker-compose restart backend
-```
+- La première fois, cela peut prendre quelques minutes (installation des dépendances, import de la base, etc.).
+- Attendez que tous les services soient bien démarrés (backend, frontend, db, redis).
 
 ---
 
-## 4. Initialisation de la base de données
+## 5. Accéder à l’application
 
-- Le dossier `backend/db_init/` contient :
-  - `dump.sql` : structure et données de la base
-  - `patch_identity.sql` : correctifs d’auto-incrémentation (IDENTITY)
-- Ces fichiers sont automatiquement importés au premier démarrage du conteneur `db`.
+- **Frontend (React)** : [http://localhost:5173](http://localhost:5173)
+- **Backend (Django API)** : [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## 5. Bonnes pratiques Docker
+## 6. Résumé
 
-- **Ne jamais modifier la base de données à la main dans le conteneur** : toujours passer par les dumps et patchs.
-- **Pour ajouter des dépendances Python ou Node** : modifie `requirements.txt` ou `package.json` puis rebuild.
-- **Pour tester en local** : tout se fait via Docker, aucune installation locale de Python, Node, PostgreSQL ou Redis n’est nécessaire.
-- **Pour déployer ailleurs** : il suffit de copier le projet et de relancer `docker-compose up --build`.
-
----
-
-## 6. Dépannage rapide
-
-- Si le backend ne démarre pas tout de suite, il attend que la base soit prête (grâce à `wait-for-it.sh`).
-- Si tu veux changer les ports ou variables d’environnement, modifie `docker-compose.yml`.
-- Pour voir tous les logs :
-  ```bash
-  docker-compose logs
-  ```
+- Clonez le projet depuis GitHub
+- Créez et remplissez le fichier `.env` dans `backend/`
+- Lancez Docker Desktop
+- Dans le terminal à la racine du projet, faites 'docker-compose up --build'
+- L’application sera accessible et prête à l’emploi
 
 ---
 
-**Pour toute question sur Docker, consulte ce fichier ou le README principal.** 
+**Pour toute question ou problème, consultez les logs avec :**
+```bash
+docker-compose logs
+```
+Voir les images:
+docker images 
+
+Voir les conteneurs lancé:
+docker ps
+
+Bonne utilisation ! 
